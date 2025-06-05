@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐺 론 울프 하울링 벌크업</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            color: #ecf0f1;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header-title {
+            font-size: clamp(1.5em, 5vw, 2.5em);
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .header-subtitle {
+            font-size: clamp(1em, 3vw, 1.2em);
+            opacity: 0.95;
+        }
+        
+        .dashboard {
+            background: #34495e;
+            padding: 20px;
+        }
+        
+        .chart-title {
+            color: #e74c3c;
+            font-size: clamp(1.2em, 4vw, 1.5em);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e74c3c;
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .empty-chart {
+            color: #7f8c8d;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #fff;
+        }
+        
+        .stat-card-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .exercise-tabs {
+            display: flex;
+            background: #1a1a1a;
+            overflow-x: auto;
+        }
+        
+        .exercise-tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            color: #bdc3c7;
+            white-space: nowrap;
+        }
+        
+        .exercise-tab.active {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border-bottom-color: #fff;
+        }
+        
+        .exercise-tab:hover:not(.active) {
+            background: #2c3e50;
+            color: #e74c3c;
+        }
+        
+        .content {
+            padding: 20px;
+            background: #1a1a1a;
+        }
+        
+        .quote {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            border: 2px solid #fff;
+        }
+        
+        .exercise-card {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            border: 2px solid #e74c3c;
+        }
+        
+        .exercise-name {
+            font-size: clamp(1.3em, 4vw, 1.8em);
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 8px;
+        }
+        
+        .exercise-target {
+            background: rgba(231, 76, 60, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: 1px solid #e74c3c;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .record-form {
+            background: rgba(0,0,0,0.3);
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e74c3c;
+        }
+        
+        .form-title {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-label {
+            color: #bdc3c7;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .input {
+            background: #2c3e50;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            min-height: 45px;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+        }
+        
+        .memo-input {
+            background: #2c3e50;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            height: 80px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+        
+        .memo-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+        }
+        
+        .add-button {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            border: 2px solid #fff;
+            width: 100%;
+            max-width: 300px;
+            transition: all 0.3s ease;
+        }
+        
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .records-history {
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid #e74c3c;
+        }
+        
+        .history-title {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .record-item {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .record-date {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .record-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .record-stat {
+            text-align: center;
+            padding: 8px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 8px;
+        }
+        
+        .record-stat-value {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .record-stat-label {
+            font-size: 0.8em;
+            color: #bdc3c7;
+            margin-top: 2px;
+        }
+        
+        .record-memo {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 3px solid #e74c3c;
+            font-style: italic;
+            color: #ecf0f1;
+        }
+        
+        .no-records {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 30px 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            border: 2px dashed #34495e;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .record-details {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="header-title">🐺 론 울프 하울링 벌크업</h1>
+            <p class="header-subtitle">4대 운동 기록 프로그램</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="chart-title" id="chartTitle">📊 스쿼트 주간 최고 중량 추이</div>
+            <div class="chart-container" id="chartContainer">
+                <div id="chartBars" style="display: flex; align-items: flex-end; height: 160px; padding: 40px 10px 10px 10px; gap: 8px; overflow-x: auto;">
+                    <div class="empty-chart" id="emptyChart">
+                        기록을 추가하면 여기에 중량 성장 그래프가 표시됩니다 💪
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-title">🏋️ 스쿼트</div>
+                    <div class="stat-number" id="squatMax">0</div>
+                    <div class="stat-label">최고 중량 (kg)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">💀 데드리프트</div>
+                    <div class="stat-number" id="deadliftMax">0</div>
+                    <div class="stat-label">최고 중량 (kg)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">💪 벤치프레스</div>
+                    <div class="stat-number" id="benchMax">0</div>
+                    <div class="stat-label">최고 중량 (kg)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">🚀 오버헤드프레스</div>
+                    <div class="stat-number" id="ohpMax">0</div>
+                    <div class="stat-label">최고 중량 (kg)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-tabs">
+            <div class="exercise-tab active" onclick="showExercise('squat')">🏋️ 스쿼트</div>
+            <div class="exercise-tab" onclick="showExercise('deadlift')">💀 데드리프트</div>
+            <div class="exercise-tab" onclick="showExercise('bench')">💪 벤치프레스</div>
+            <div class="exercise-tab" onclick="showExercise('ohp')">🚀 오버헤드프레스</div>
+        </div>
+        
+        <div class="content">
+            <div class="quote">
+                "늑대는 혼자서도 강하다. 하지만 더 강해지기 위해 매일 훈련한다." - 론 울프 🐺
+            </div>
+            
+            <div class="exercise-card">
+                <div class="exercise-name" id="exerciseName">🏋️ 스쿼트 (Squat)</div>
+                <div class="exercise-target" id="exerciseTarget">하체의 왕 - 대퇴사두근, 둔근, 햄스트링</div>
+                
+                <div class="record-form">
+                    <div class="form-title">🐺 새로운 기록 추가</div>
+                    
+                    <div class="input-field" style="margin-bottom: 15px;">
+                        <label class="input-label">날짜</label>
+                        <input type="date" class="input" id="dateInput">
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="input-field">
+                            <label class="input-label">중량 (kg)</label>
+                            <input type="number" class="input" id="weightInput" placeholder="100" min="0" step="0.5">
+                        </div>
+                        
+                        <div class="input-field">
+                            <label class="input-label">횟수</label>
+                            <input type="number" class="input" id="repsInput" placeholder="5" min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="input-field" style="margin-bottom: 15px;">
+                        <label class="input-label">메모 (느낌, 컨디션 등)</label>
+                        <textarea class="memo-input" id="memoInput" placeholder="예: 잘 밀렸다, 무릎이 아팠다, 폼이 좋았다 등" maxlength="200"></textarea>
+                    </div>
+                    
+                    <button class="add-button" onclick="addRecord()">🐺 기록 추가하기</button>
+                </div>
+                
+                <div class="records-history">
+                    <div class="history-title" id="historyTitle">📈 스쿼트 기록 히스토리</div>
+                    <div id="recordsList">
+                        <div class="no-records">아직 기록이 없습니다.<br>첫 기록을 추가해보세요! 🐺</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 운동 기록 데이터
+        let workoutData = {
+            squat: [],
+            deadlift: [],
+            bench: [],
+            ohp: []
+        };
+
+        let currentExercise = 'squat';
+
+        // 운동별 정보
+        const exerciseInfo = {
+            squat: {
+                name: '🏋️ 스쿼트 (Squat)',
+                target: '하체의 왕 - 대퇴사두근, 둔근, 햄스트링',
+                emoji: '🏋️'
+            },
+            deadlift: {
+                name: '💀 데드리프트 (Deadlift)',
+                target: '전신의 제왕 - 후면사슬, 등, 코어',
+                emoji: '💀'
+            },
+            bench: {
+                name: '💪 벤치프레스 (Bench Press)',
+                target: '상체의 왕 - 대흉근, 삼각근, 삼두근',
+                emoji: '💪'
+            },
+            ohp: {
+                name: '🚀 오버헤드프레스 (Overhead Press)',
+                target: '어깨의 제왕 - 삼각근, 코어, 삼두근',
+                emoji: '🚀'
+            }
+        };
+
+        // 페이지 로드 시 실행
+        window.onload = function() {
+            setTodayDate();
+            loadData();
+            updateDisplay();
+        };
+
+        // 오늘 날짜 설정
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
+        }
+
+        // 데이터 로드 (오류 방지)
+        function loadData() {
+            try {
+                if (typeof(Storage) !== "undefined" && window.localStorage) {
+                    const savedData = localStorage.getItem('loneWolfWorkoutData');
+                    if (savedData) {
+                        workoutData = JSON.parse(savedData);
+                    }
+                } else {
+                    console.log('localStorage를 사용할 수 없습니다. 세션 저장을 사용합니다.');
+                }
+            } catch (error) {
+                console.log('localStorage 오류, 메모리 저장 사용:', error);
+            }
+        }
+
+        // 데이터 저장 (오류 방지)
+        function saveData() {
+            try {
+                if (typeof(Storage) !== "undefined" && window.localStorage) {
+                    localStorage.setItem('loneWolfWorkoutData', JSON.stringify(workoutData));
+                    return true;
+                } else {
+                    console.log('localStorage를 사용할 수 없어 메모리에만 저장됩니다.');
+                    return true; // 메모리 저장은 성공으로 처리
+                }
+            } catch (error) {
+                console.log('저장 오류, 메모리에만 유지:', error);
+                return true; // 오류가 있어도 메모리에는 저장됨
+            }
+        }
+
+        // 운동 탭 전환
+        function showExercise(exercise) {
+            currentExercise = exercise;
+            
+            // 탭 활성화
+            document.querySelectorAll('.exercise-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateDisplay();
+        }
+
+        // 차트 업데이트
+        function updateChart() {
+            const chartBars = document.getElementById('chartBars');
+            const emptyChart = document.getElementById('emptyChart');
+            const records = workoutData[currentExercise] || [];
+            
+            if (records.length === 0) {
+                chartBars.innerHTML = '<div class="empty-chart">기록을 추가하면 여기에 중량 성장 그래프가 표시됩니다 💪</div>';
+                return;
+            }
+            
+            // 주간 데이터 계산
+            const weeklyData = calculateWeeklyProgress(records);
+            
+            if (weeklyData.length === 0) {
+                chartBars.innerHTML = '<div class="empty-chart">기록을 추가하면 여기에 중량 성장 그래프가 표시됩니다 💪</div>';
+                return;
+            }
+            
+            const maxWeight = Math.max(...weeklyData.map(d => d.maxWeight));
+            let barsHTML = '';
+            
+            weeklyData.forEach((item, index) => {
+                const height = maxWeight > 0 ? Math.max(20, (item.maxWeight / maxWeight) * 80) : 20;
+                const colors = {
+                    squat: '#e74c3c',
+                    deadlift: '#8e44ad', 
+                    bench: '#2980b9',
+                    ohp: '#27ae60'
+                };
+                
+                barsHTML += `
+                    <div style="display: flex; flex-direction: column; align-items: center; margin: 0 8px; min-width: 50px; position: relative;">
+                        <div style="color: #e74c3c; font-size: 13px; font-weight: bold; margin-bottom: 10px; position: absolute; top: -35px; white-space: nowrap;">${item.maxWeight}kg</div>
+                        <div style="width: 32px; height: ${height}px; background: ${colors[currentExercise]}; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);"></div>
+                        <div style="color: #bdc3c7; font-size: 10px; font-weight: bold; margin-top: 8px; text-align: center;">${item.week}주차</div>
+                    </div>
+                `;
+            });
+            
+            chartBars.innerHTML = barsHTML;
+        }
+
+        // 주간 진행도 계산
+        function calculateWeeklyProgress(records) {
+            if (!records || records.length === 0) return [];
+            
+            const validRecords = records.filter(record => 
+                record && record.date && typeof record.weight === 'number' && record.weight > 0
+            );
+            
+            if (validRecords.length === 0) return [];
+            
+            const sortedRecords = validRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+            const weeklyGroups = {};
+            
+            sortedRecords.forEach(record => {
+                const date = new Date(record.date);
+                const weekStart = new Date(date);
+                weekStart.setDate(date.getDate() - date.getDay());
+                const weekKey = weekStart.toISOString().split('T')[0];
+                
+                if (!weeklyGroups[weekKey]) {
+                    weeklyGroups[weekKey] = [];
+                }
+                weeklyGroups[weekKey].push(record.weight);
+            });
+            
+            const weeklyData = [];
+            const sortedWeeks = Object.keys(weeklyGroups).sort();
+            
+            sortedWeeks.forEach((weekKey, index) => {
+                const weights = weeklyGroups[weekKey];
+                const maxWeight = Math.max(...weights);
+                weeklyData.push({
+                    week: index + 1,
+                    maxWeight: maxWeight,
+                    date: weekKey
+                });
+            });
+            
+            return weeklyData.slice(-8); // 최근 8주
+        }
+
+        // 화면 업데이트
+        function updateDisplay() {
+            // 제목 업데이트
+            document.getElementById('chartTitle').textContent = `📊 ${exerciseInfo[currentExercise].name} 주간 최고 중량 추이`;
+            document.getElementById('exerciseName').textContent = exerciseInfo[currentExercise].name;
+            document.getElementById('exerciseTarget').textContent = exerciseInfo[currentExercise].target;
+            document.getElementById('historyTitle').textContent = `📈 ${exerciseInfo[currentExercise].name} 기록 히스토리`;
+            
+            // 통계 업데이트
+            updateStats();
+            
+            // 차트 업데이트
+            updateChart();
+            
+            // 기록 목록 업데이트
+            displayRecords();
+        }
+
+        // 기록 추가
+        function addRecord() {
+            const date = document.getElementById('dateInput').value;
+            const weight = document.getElementById('weightInput').value;
+            const reps = document.getElementById('repsInput').value;
+            const memo = document.getElementById('memoInput').value;
+
+            // 입력 검증
+            if (!date) {
+                alert('날짜를 입력해주세요!');
+                return;
+            }
+
+            if (!weight || parseFloat(weight) <= 0) {
+                alert('올바른 중량을 입력해주세요!');
+                return;
+            }
+
+            if (!reps || parseInt(reps) <= 0) {
+                alert('올바른 횟수를 입력해주세요!');
+                return;
+            }
+
+            const weightNum = parseFloat(weight);
+            const repsNum = parseInt(reps);
+
+            // 중복 기록 확인
+            const existingIndex = workoutData[currentExercise].findIndex(record => record.date === date);
+            if (existingIndex !== -1) {
+                if (!confirm('같은 날짜에 이미 기록이 있습니다. 덮어쓰시겠습니까?')) {
+                    return;
+                }
+                workoutData[currentExercise].splice(existingIndex, 1);
+            }
+
+            // 새 기록 추가
+            const newRecord = {
+                date: date,
+                weight: weightNum,
+                reps: repsNum,
+                memo: memo.trim(),
+                volume: weightNum * repsNum,
+                timestamp: Date.now()
+            };
+
+            workoutData[currentExercise].push(newRecord);
+            workoutData[currentExercise].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // 저장
+            if (saveData()) {
+                // 폼 초기화
+                document.getElementById('weightInput').value = '';
+                document.getElementById('repsInput').value = '';
+                document.getElementById('memoInput').value = '';
+                setTodayDate();
+
+                // 화면 업데이트
+                updateDisplay();
+
+                alert('🐺 기록이 성공적으로 추가되었습니다!');
+            }
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            const exercises = ['squat', 'deadlift', 'bench', 'ohp'];
+            
+            exercises.forEach(exercise => {
+                const records = workoutData[exercise] || [];
+                let maxWeight = 0;
+                
+                if (records.length > 0) {
+                    maxWeight = Math.max(...records.map(r => r.weight || 0));
+                }
+                
+                const elementId = exercise === 'squat' ? 'squatMax' : 
+                                 exercise === 'deadlift' ? 'deadliftMax' :
+                                 exercise === 'bench' ? 'benchMax' : 'ohpMax';
+                
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.textContent = maxWeight;
+                }
+            });
+        }
+
+        // 기록 표시
+        function displayRecords() {
+            const container = document.getElementById('recordsList');
+            const records = workoutData[currentExercise] || [];
+            
+            if (records.length === 0) {
+                container.innerHTML = '<div class="no-records">아직 기록이 없습니다.<br>첫 기록을 추가해보세요! 🐺</div>';
+                return;
+            }
+
+            let html = '';
+            records.slice(0, 10).forEach(record => {
+                html += `
+                    <div class="record-item">
+                        <div class="record-date">${formatDate(record.date)}</div>
+                        <div class="record-details">
+                            <div class="record-stat">
+                                <div class="record-stat-value">${record.weight}</div>
+                                <div class="record-stat-label">중량 (kg)</div>
+                            </div>
+                            <div class="record-stat">
+                                <div class="record-stat-value">${record.reps}</div>
+                                <div class="record-stat-label">횟수</div>
+                            </div>
+                            <div class="record-stat">
+                                <div class="record-stat-value">${record.volume.toFixed(1)}</div>
+                                <div class="record-stat-label">총 볼륨</div>
+                            </div>
+                        </div>
+                        ${record.memo ? `<div class="record-memo">"${record.memo}"</div>` : ''}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 날짜 포맷팅
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}년 ${month}월 ${day}일`;
+            } catch (error) {
+                return dateString;
+            }
+        }
+    </script>
+</body>
+</html>
